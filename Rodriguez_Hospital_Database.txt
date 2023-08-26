@@ -1,0 +1,292 @@
+-- Oracle SQL Hospital Project Database
+
+create table Med_Staff (
+Med_ID number(5) not null,
+Med_Fname varchar2(15) not null,
+Med_Lname varchar2(15) not null,
+Med_Specialize varchar2(20) not null,
+Med_YOE number(2) not null,
+constraint pk_Med_Staff primary key (Med_ID)
+);
+--------------------------------------
+create table Room (
+Room_ID number(5) not null,
+Num_of_Beds number(2),
+constraint pk_Room primary key (Room_ID)
+);
+----------------------------------------------------
+create table General_Staff (
+Gen_ID number(5)  not null,
+Room_ID number(5),
+Gen_Fname varchar2(15) not null,
+Gen_Lname varchar2(15) not null,
+Gen_OOC varchar2(20) not null,
+constraint pk_General_Staff primary key (Gen_ID),
+constraint fk_Room foreign key (Room_ID) references Room (Room_ID)
+);
+---------------------------------------------------------------------
+create table Supplier (
+Supp_ID number(5)  not null,
+Order_ID number(5)  not null,
+Order_Issue_Date date not null,
+Order_Arrive_Date date not null,
+constraint pk_Supplier primary key (Supp_ID)
+);
+----------------------------------------------------------------------
+create table Med_Building (
+Build_ID number(5)  not null,
+Supp_ID number(5)  not null,
+Build_Name varchar2(15) not null,
+Build_NOR varchar2(2) not null,
+constraint pk_Med_Building primary key (Build_ID),
+constraint fk_Supplier foreign key (Supp_ID) references Supplier (Supp_ID)
+);
+-------------------------------------------------------------
+create table Admin (
+Admin_ID number(5)  not null,
+Med_ID number(5),
+Build_ID number(5)  not null,
+Admin_FName varchar2(15) not null,
+Admin_LName varchar2(15) not null,
+constraint pk_Appointment primary key (Admin_ID),
+constraint fk_Med_Building foreign key (Build_ID) references Med_Building (Build_ID),
+constraint fk_Med_Staff foreign key (Med_ID) references Med_Staff (Med_ID)
+);
+--------------------------------------------------------
+create table Treatment (
+Treat_ID number(5)  not null,
+Treat_Desc varchar2(50),
+Treat_Dose varchar2(4) not null,
+Treat_Dur number(4) not null,
+constraint pk_Treatment primary key (Treat_ID)
+);
+---------------------------------------------------
+create table Patient (
+Pat_ID number(5)  not null,
+Treat_ID number(5)  not null,
+Room_ID number(5) ,
+Pat_Diagnosis varchar2(50) not null,
+constraint pk_Patient primary key (Pat_ID),
+constraint fk_Treatment foreign key (Treat_ID) references Treatment (Treat_ID),
+constraint fk_Room2 foreign key (Room_ID) references Room (Room_ID)
+);
+----------------------------------------------
+create table Record (
+Rec_ID number(5)  not null,
+Pat_ID number(5)  not null,
+Med_History varchar2(20) not null,
+Financial_Hist varchar2(20) not null,
+constraint pk_Record primary key (Rec_ID),
+constraint fk_Patient2 foreign key (Pat_ID) references Patient (Pat_ID)
+);
+--------------------------------------------------
+create table Appointment (
+App_ID number(5)  not null,
+Pat_ID number(5)  not null,
+App_Date date not null,
+App_Time varchar2(4) not null,
+App_Desc varchar2(50),
+constraint pk_App primary key (App_ID),
+constraint fk_Patient3 foreign key (Pat_ID) references Patient (Pat_ID)
+);
+------------------------------------------------------------
+
+--Insert values into table
+
+--Med_staff
+
+insert into Med_staff(Med_ID, Med_Fname, Med_Lname, Med_Specialize, Med_YOE)
+values(60089, 'Lizbeth', 'Lopez', 'Pediatrician', 11);
+insert into Med_staff(Med_ID, Med_Fname, Med_Lname, Med_Specialize, Med_YOE)
+values(48775, 'Yan', 'Zhao', 'Nurse', 4);
+insert into Med_staff(Med_ID, Med_Fname, Med_Lname, Med_Specialize, Med_YOE)
+values(10009, 'Ben', 'Pen', 'ER', 14);
+insert into Med_staff(Med_ID, Med_Fname, Med_Lname, Med_Specialize, Med_YOE)
+values(82136, 'Venny', 'Butts', 'Surgeon', 21);
+insert into Med_staff(Med_ID, Med_Fname, Med_Lname, Med_Specialize, Med_YOE)
+values(93572, 'Kimberly', 'Meyer', 'Nurse', 3);
+
+update Med_staff set Med_Lname = 'Harvard' where Med_ID = 93572;
+update Med_staff set Med_YOE = 5 where Med_ID = 48775;
+
+--Supplier
+
+insert into Supplier(Supp_ID, Order_ID, Order_Issue_Date, Order_Arrive_Date)
+values(00166, 00162, to_date('2023-04-09', 'YYYY-MM-DD'), to_date('2023-04-28', 'YYYY-MM-DD'));
+insert into Supplier(Supp_ID, Order_ID, Order_Issue_Date, Order_Arrive_Date)
+values(09934, 02974, to_date('2023-07-08', 'YYYY-MM-DD'), to_date('2023-07-14', 'YYYY-MM-DD'));
+insert into Supplier(Supp_ID, Order_ID, Order_Issue_Date, Order_Arrive_Date)
+values(00164, 06211, to_date('2023-02-03', 'YYYY-MM-DD'), to_date('2023-02-16', 'YYYY-MM-DD'));
+insert into Supplier(Supp_ID, Order_ID, Order_Issue_Date, Order_Arrive_Date)
+values(44801, 11994, to_date('2023-03-05', 'YYYY-MM-DD'), to_date('2023-03-12', 'YYYY-MM-DD'));
+insert into Supplier(Supp_ID, Order_ID, Order_Issue_Date, Order_Arrive_Date)
+values(09932, 77777, to_date('2023-04-30', 'YYYY-MM-DD'), to_date('2023-05-08', 'YYYY-MM-DD'));
+
+update Supplier set Order_Issue_Date = to_date('2023-07-09', 'YYYY-MM-DD'), Order_Arrive_Date = to_date('2023-07-17', 'YYYY-MM-DD') where Supp_ID = 09934;
+update Supplier set Order_ID = 06231 where Supp_ID = 00164;
+
+--Med_Building
+
+insert into Med_Building(Build_ID, Supp_ID, Build_Name, Build_NOR)
+values(88877, 00166, 'Women', 30);
+insert into Med_Building(Build_ID, Supp_ID, Build_Name, Build_NOR)
+values(57270, 09934, 'Emergency', 20);
+insert into Med_Building(Build_ID, Supp_ID, Build_Name, Build_NOR)
+values(88876, 00164, 'Children', 30);
+insert into Med_Building(Build_ID, Supp_ID, Build_Name, Build_NOR)
+values(65841, 44801, 'Radiology', 15);
+insert into Med_Building(Build_ID, Supp_ID, Build_Name, Build_NOR)
+values(19458, 09932, 'General', 40);
+
+update Med_Building set Build_NOR = 20 where Build_ID = 65841;
+update Med_Building set Build_NOR = 45 where Build_ID = 19458;
+
+--Treatment
+
+insert into Treatment(Treat_ID, Treat_Desc, Treat_Dose, Treat_Dur)
+values(10083, 'Works', '15mL', 4);
+insert into Treatment(Treat_ID, Treat_Desc, Treat_Dose, Treat_Dur)
+values(74669, 'Works', '15mL', 7);
+insert into Treatment(Treat_ID, Treat_Desc, Treat_Dose, Treat_Dur)
+values(64344, 'Works', '15mL', 14);
+insert into Treatment(Treat_ID, Treat_Desc, Treat_Dose, Treat_Dur)
+values(26010, 'Works', '30L', 20);
+insert into Treatment(Treat_ID, Treat_Desc, Treat_Dose, Treat_Dur)
+values(17623, 'Works', '15mL', 7);
+
+update Treatment set Treat_Dose = '30mL' where Treat_ID = 26010;
+update Treatment set Treat_Dur = 7 where Treat_ID = 10083;
+
+--Room
+
+insert into Room(Room_ID, Num_of_Beds)
+values(00032, 5);
+insert into Room(Room_ID, Num_of_Beds)
+values(00104, 2);
+insert into Room(Room_ID, Num_of_Beds)
+values(00046, 1);
+insert into Room(Room_ID, Num_of_Beds)
+values(00098, 3);
+insert into Room(Room_ID, Num_of_Beds)
+values(00037, 5);
+
+update Room set Num_of_Beds = 4 where Room_ID = 00032;
+update Room set Num_of_Beds = 7 where Room_ID = 00037;
+
+--Gen_staff
+
+insert into General_staff(Gen_ID, Room_ID, Gen_Fname,Gen_Lname, Gen_OOC)
+values(65479, null, 'Andrew', 'Backer', 'Securiy');
+insert into General_staff(Gen_ID, Room_ID, Gen_Fname,Gen_Lname, Gen_OOC)
+values(78666, 00032, 'Rose', 'Turner', 'Volunteer');
+insert into General_staff(Gen_ID, Room_ID, Gen_Fname,Gen_Lname, Gen_OOC)
+values(45480, null, 'Micheal', 'Brown', 'Reception');
+insert into General_staff(Gen_ID, Room_ID, Gen_Fname,Gen_Lname, Gen_OOC)
+values(51223, 00046, 'Austin', 'Angelo', 'Technician');
+insert into General_staff(Gen_ID, Room_ID, Gen_Fname,Gen_Lname, Gen_OOC)
+values(42033, 00098, 'Michelle', 'Bryer', 'Technician');
+
+update General_staff set Gen_OOC = 'Security' where Gen_ID = 65479;
+update General_staff set Room_ID = 00037 where Gen_ID = 78666;
+
+--Admin
+
+insert into Admin(Admin_ID, Med_ID, Build_ID, Admin_Fname, Admin_Lname)
+values(88855, 82136, 19458, 'Venny', 'Butts');
+insert into Admin(Admin_ID, Med_ID, Build_ID, Admin_Fname, Admin_Lname)
+values(26682, null, 88877, 'Gerald', 'Border');
+insert into Admin(Admin_ID, Med_ID, Build_ID, Admin_Fname, Admin_Lname)
+values(94542, 10009, 57270, 'Ben', 'Pen');
+insert into Admin(Admin_ID, Med_ID, Build_ID, Admin_Fname, Admin_Lname)
+values(17455, null, 88876, 'Violet', 'Wang');
+insert into Admin(Admin_ID, Med_ID, Build_ID, Admin_Fname, Admin_Lname)
+values(42424, null, 65841, 'Finly', 'Roger');
+
+update Admin set Admin_Fname = 'Finley' where Admin_ID = 42424;
+update Admin set Admin_ID = 17456 where Admin_Lname = 'Wang';
+
+--Patient
+
+insert into Patient(Pat_ID, Treat_ID, Room_ID, Pat_Diagnosis)
+values(90052, 10083, 00037, 'Stomach virus');
+insert into Patient(Pat_ID, Treat_ID, Room_ID, Pat_Diagnosis)
+values(40005, 74669, 00032, 'Sucessful');
+insert into Patient(Pat_ID, Treat_ID, Room_ID, Pat_Diagnosis)
+values(30068, 64344, 00104, 'Healthy');
+insert into Patient(Pat_ID, Treat_ID, Room_ID, Pat_Diagnosis)
+values(21214, 26010, 00046, '2 weeks pregnant');
+insert into Patient(Pat_ID, Treat_ID, Room_ID, Pat_Diagnosis)
+values(59580, 17623, 00098, 'Minor ear infection');
+
+update Patient set Room_ID = 00037 where Pat_ID = 59580;
+Update Patient set Pat_Diagnosis = 'Stomach flu' where Pat_ID = 90052;
+
+--Record
+
+insert into Record(Rec_ID, Pat_ID, Med_History, Financial_Hist)
+values(60073, 90052, 'Good', 'Good');
+insert into Record(Rec_ID, Pat_ID, Med_History, Financial_Hist)
+values(65047, 40005, 'Past surgeries', 'Good');
+insert into Record(Rec_ID, Pat_ID, Med_History, Financial_Hist)
+values(88116, 30068, 'Allergies', 'Good');
+insert into Record(Rec_ID, Pat_ID, Med_History, Financial_Hist)
+values(27333, 21214, 'Pregnant', 'Good');
+insert into Record(Rec_ID, Pat_ID, Med_History, Financial_Hist)
+values(41111, 59580, 'Joint pain', 'Good');
+
+update Record set Med_History = 'Sensory issues and allergy' where Rec_ID = 88116; 
+update Record set Financial_Hist = 'OK' where Rec_ID = 65047; 
+
+--Appointment
+
+insert into Appointment(App_ID, Pat_ID, App_Date, App_Time, App_Desc)
+values(33229, 90052, TO_DATE('2023-06-07', 'YYYY-MM-DD'), '08AM', 'Adomonal x-ray');
+insert into Appointment(App_ID, Pat_ID, App_Date, App_Time, App_Desc)
+values(05050, 40005, TO_DATE('2023-04-24', 'YYYY-MM-DD'), '12PM', 'Hip surgery');
+insert into Appointment(App_ID, Pat_ID, App_Date, App_Time, App_Desc)
+values(60873, 30068, TO_DATE('2023-05-23', 'YYYY-MM-DD'), '10AM', 'Check-up');
+insert into Appointment(App_ID, Pat_ID, App_Date, App_Time, App_Desc)
+values(36036, 21214, TO_DATE('2023-04-29', 'YYYY-MM-DD'), '11AM', 'Ultrasound');
+insert into Appointment(App_ID, Pat_ID, App_Date, App_Time, App_Desc)
+values(52201, 59580, TO_DATE('2023-05-02', 'YYYY-MM-DD'), '09AM', 'Ear inspection');
+
+update Appointment set App_Date = TO_DATE('2023-05-26', 'YYYY-MM-DD') where App_ID = 60873;
+update Appointment set App_Time = '10AM' where App_ID = 52201;
+
+
+--query scripts
+
+select * from Med_staff order by Med_YOE;
+select * from General_staff order by Gen_Lname Desc;
+select avg(Treat_Dur) as "Average Duration", Treat_ID 
+    from Treatment
+Group by Treat_ID;
+
+select count(App_Date) as "Number of appointments", App_ID 
+    from Appointment
+Group by App_ID;
+
+--join
+select * from Supplier inner join Med_Building on Med_Building.Supp_ID = Supplier.Supp_ID;
+
+select Room.Room_ID from Room 
+inner join General_staff on General_staff.Room_ID = Room.Room_ID
+inner join Patient on Patient.Room_ID = Room.Room_ID;
+
+select * from Patient
+left outer join Appointment ON Patient.Pat_ID = Appointment.Pat_ID
+left outer join Record ON Patient.Pat_ID = Record.Pat_ID
+left outer join Treatment ON Patient.Treat_ID = Treatment.Treat_ID;
+---Scripts to demonstrait errors due to constraints
+
+-- integrity constraint
+update General_staff set Room_ID = 'A_string' where Gen_ID = 78666; 
+
+--not null constraint
+update General_staff set Gen_Lname = NULL where Gen_ID = 78666; 
+
+--refferential constraint
+update General_Staff set Room_ID = 00001 where Gen_ID = 78666;
+
+--refferential constraint
+update Med_Building set Supp_ID = 00001 where Build_ID = 65841;
